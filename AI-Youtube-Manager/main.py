@@ -38,8 +38,8 @@ if st.button("Analyze"):
 
             st.divider()
 
-            st.subheader("🕒 Best Time to Post")
-            best_time = get_best_posting_time(result['channel_name'])
-            st.write(f"Try posting around **{best_time}** to increase your reach.")
+            st.subheader("🕒 Best Times to Post")
+            best_time = get_best_posting_times(result['channel_name'])
+            st.write(f"Try posting around **{best_times}** to increase your reach.")
     else:
         st.warning("Please enter a valid YouTube channel URL.")
