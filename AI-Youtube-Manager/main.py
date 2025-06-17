@@ -2,7 +2,7 @@ import streamlit as st
 from backend.youtube_analyzer import analyze_channel
 from hashtag_generator import generate_hashtags
 from content_ideas import generate_ideas
-from best_time import get_best_posting_time
+from backend.best_time import get_best_posting_time
 
 st.title("📊 AI YouTube Manager")
 st.subheader("Analyze any YouTube channel in seconds")
