@@ -14,7 +14,9 @@ if st.button("Analyze"):
     with st.spinner("Analyzing Channel..."):
         try:
             channel_data = analyze_channel(channel_url)
-            if channel_data:
+
+            # ✅ Better validation
+            if channel_data and 'name' in channel_data:
                 st.success("Analysis Successful ✅")
 
                 st.markdown(f"**Channel Name:** {channel_data['name']}")
@@ -41,7 +43,6 @@ if st.button("Analyze"):
                 st.markdown("### ⏰ Best Times to Post:")
                 for day, time in best_times.items():
                     st.write(f"- {day}: {time}")
-
             else:
                 st.error("Failed to fetch channel data. Please check the URL.")
         except Exception as e:
