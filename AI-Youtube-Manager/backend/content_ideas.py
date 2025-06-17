@@ -1,12 +1,13 @@
-def generate_ideas(description):
-    if not description:
-        return []
+def generate_ideas(description, titles):
+    import random
 
-    # Dummy content ideas (customize for better results later)
-    return [
-        "Behind the scenes of my 3D animation process",
-        "Top 5 AI tools for creative storytelling",
-        "Weekly recap: What I learned in AI + 3D",
-        "Tips for growing a channel with short films",
-        "How to generate ideas using AI"
+    themes = [
+        "Top 5 tips on {}",
+        "Why {} is important",
+        "Behind the scenes: {}",
+        "How I create content on {}",
+        "Q&A on {}",
     ]
+
+    keyword = titles[0] if titles else description.split()[0]  # Fallback
+    return [idea.format(keyword) for idea in random.sample(themes, 3)]
