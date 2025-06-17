@@ -1,49 +1,48 @@
 import streamlit as st
 from backend.youtube_analyzer import analyze_channel
-from hashtag_generator import generate_hashtags
-from content_ideas import generate_ideas
+from backend.hashtag_generator import generate_hashtags
+from backend.content_ideas import generate_ideas
 from backend.best_time import get_best_posting_times
 
+st.set_page_config(page_title="AI YouTube Manager", page_icon="📊", layout="centered")
 st.title("📊 AI YouTube Manager")
 st.subheader("Analyze any YouTube channel in seconds")
 
 channel_url = st.text_input("Enter YouTube Channel URL:")
 
 if st.button("Analyze"):
-    if channel_url:
-        result = analyze_channel(channel_url)
-        if "error" in result:
-            st.error(result["error"])
-        else:
-            st.success("Analysis Successful ✅")
-            st.write(f"**Channel Name:** {result['channel_name']}")
-            st.write(f"**Subscribers:** {int(result['subscribers']):,}")
-            st.write(f"**Total Views:** {int(result['views']):,}")
-            st.write(f"**Total Videos:** {result['videos']}")
-            st.write("**Channel Description:**")
-            st.write(result['description'])
+    with st.spinner("Analyzing Channel..."):
+        try:
+            channel_data = analyze_channel(channel_url)
+            if channel_data:
+                st.success("Analysis Successful ✅")
 
-            st.divider()
+                st.markdown(f"**Channel Name:** {channel_data['name']}")
+                st.markdown(f"**Subscribers:** {channel_data['subscribers']}")
+                st.markdown(f"**Total Views:** {channel_data['views']}")
+                st.markdown(f"**Total Videos:** {channel_data['videos']}")
 
-            st.subheader("🏷️ Hashtag Suggestions")
-            hashtags = generate_hashtags(result['description'])
-            st.write(", ".join(hashtags))
+                st.markdown("**Channel Description:**")
+                st.write(channel_data['description'])
 
-            st.divider()
+                hashtags = generate_hashtags(channel_data['description'], channel_data['recent_titles'])
+                st.markdown("---")
+                st.markdown("### 🔖 Hashtag Suggestions:")
+                st.write(", ".join(hashtags))
 
-            st.subheader("💡 Content Ideas")
-            ideas = generate_ideas(result['description'])
-            for idea in ideas:
-                st.write(f"• {idea}")
+                content_ideas = generate_ideas(channel_data['description'], channel_data['recent_titles'])
+                st.markdown("---")
+                st.markdown("### 💡 Content Ideas:")
+                for idea in content_ideas:
+                    st.write(f"- {idea}")
 
-            st.divider()
+                best_times = get_best_posting_times(channel_data['name'])
+                st.markdown("---")
+                st.markdown("### ⏰ Best Times to Post:")
+                for day, time in best_times.items():
+                    st.write(f"- {day}: {time}")
 
-            st.subheader("🕒 Best Times to Post")
-            best_times = get_best_posting_times(result['channel_name'])
-
-            st.markdown("---")
-            st.write("📅 Try posting around these times to increase your reach:")
-            for day, time in best_times.items():
-                st.markdown(f"- **{day}**: {time}")
-    else:
-        st.warning("Please enter a valid YouTube channel URL.")
+            else:
+                st.error("Failed to fetch channel data. Please check the URL.")
+        except Exception as e:
+            st.error(f"Error: {str(e)}")
